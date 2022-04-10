@@ -1,0 +1,117 @@
+#include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
+WiFiClient client;
+ESP8266WebServer server(80);
+
+const char* ssid     = " "; /*Insert your network SSID here*/
+const char* password = " "; /*Insert your network password here*/
+
+String data = "";
+
+int rmotor1 = 0; /*in3*/
+int rmotor2 = 2; /*in4*/
+int lmotor1 = 5; /*in1*/
+int lmotor2 = 4; /*in2*/
+
+int LED = 16; /*This LED will tell you if you're connected to the network*/
+
+
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(115200);
+  pinMode(LED, OUTPUT);
+  pinMode(rmotor1, OUTPUT);
+  pinMode(rmotor2, OUTPUT);
+  pinMode(lmotor1, OUTPUT);
+  pinMode(lmotor2, OUTPUT);
+
+  WiFi.begin(ssid, password);
+  
+  Serial.println();
+  Serial.print("Connecting");  
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(500);
+    Serial.print(".");
+    }
+  Serial.println();
+  Serial.print("Connected, IP Address: ");
+  Serial.println(WiFi.localIP());
+  digitalWrite(LED, HIGH);  
+  
+  server.on("/", handleRequest);
+  server.onNotFound(handleRequest);
+
+  server.begin();
+  Serial.println("Server started");
+
+
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+
+  server.handleClient();
+  String data = server.arg("Key");
+  
+  if (data == "8") {
+    move_forward();
+    }
+  else if (data == "2"){ 
+    move_backward();
+    }
+  else if (data == "6"){ 
+    turn_left();
+    } 
+  else if (data == "4"){ 
+    turn_right();
+    }
+  else if (data == "0"){ 
+    move_stop();
+    }
+  
+}
+
+void handleRequest() {
+  if (server.hasArg("Key")) {
+    Serial.println(server.arg("Key"));
+    }
+  
+  server.send (200, "text/html", "");
+  delay(1);
+  }
+
+void move_forward() {
+  digitalWrite(rmotor1, HIGH);
+  digitalWrite(rmotor2, LOW);
+  digitalWrite(lmotor1, HIGH);
+  digitalWrite(lmotor2, LOW);
+}
+
+void move_backward() {
+  digitalWrite(rmotor1, LOW);
+  digitalWrite(rmotor2, HIGH);
+  digitalWrite(lmotor1, LOW);
+  digitalWrite(lmotor2, HIGH);
+}
+
+void turn_left() {
+  digitalWrite(rmotor1, HIGH);
+  digitalWrite(rmotor2, LOW);
+  digitalWrite(lmotor1, LOW);
+  digitalWrite(lmotor2, HIGH);
+}
+
+void turn_right() {
+  digitalWrite(rmotor1, LOW);
+  digitalWrite(rmotor2, HIGH);
+  digitalWrite(lmotor1, HIGH);
+  digitalWrite(lmotor2, LOW);
+}
+
+void move_stop() {
+  digitalWrite(rmotor1, LOW);
+  digitalWrite(rmotor2, LOW);
+  digitalWrite(lmotor1, LOW);
+  digitalWrite(lmotor2, LOW);
+}
