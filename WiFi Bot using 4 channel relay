@@ -1,0 +1,107 @@
+#include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
+WiFiClient client;
+ESP8266WebServer server(80);
+
+const char* ssid     = " "; /*Insert your network SSID here*/
+const char* password = " "; /*Insert your network password here*/
+
+
+int relay1 = 16;
+int relay2 = 5;
+int relay3 = 4;
+int relay4 = 0;
+
+
+void setup() {
+  // put your setup code here, to run once:
+
+  Serial.begin(115200);
+  pinMode(relay1, OUTPUT);
+  pinMode(relay2, OUTPUT);
+  pinMode(relay3, OUTPUT);
+  pinMode(relay4, OUTPUT);
+  digitalWrite(relay1, HIGH); 
+  digitalWrite(relay2, HIGH);
+  digitalWrite(relay3, HIGH); 
+  digitalWrite(relay4, HIGH);
+  
+  WiFi.begin(ssid, password);
+
+  Serial.println();
+  Serial.print("Connecting");  
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(500);
+    Serial.print(".");
+    }
+  Serial.println();
+  Serial.print("Connected, IP Address: ");
+  Serial.println(WiFi.localIP());
+
+  server.on("/", handleRequest);
+  server.onNotFound(handleRequest);
+
+  server.begin();
+  Serial.println("Server started");
+  
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+
+  server.handleClient();
+  String data = server.arg("Key");
+  Serial.println(data);
+
+  if (data == "8") {
+    forward();
+    }
+  else if (data == "2"){ 
+    backward();
+    }
+  else if (data == "6"){ 
+    right();
+    }
+  else if (data == "4"){ 
+    left();
+    }
+}
+
+void handleRequest() {
+  if (server.hasArg("Key")) {
+    Serial.println(server.arg("Key"));
+    }
+
+  server.send (200, "text/html", "");
+  delay(1);
+
+}
+
+void forward() {
+  digitalWrite(relay1, HIGH);
+  digitalWrite(relay2, LOW);
+  digitalWrite(relay3, HIGH);
+  digitalWrite(relay4, LOW);
+  }
+
+void backward() {
+  digitalWrite(relay1, LOW);
+  digitalWrite(relay2, HIGH);
+  digitalWrite(relay3, LOW);
+  digitalWrite(relay4, HIGH);
+  }
+
+void right(){
+  digitalWrite(relay1, HIGH);
+  digitalWrite(relay2, LOW);
+  digitalWrite(relay3, LOW);
+  digitalWrite(relay4, LOW);
+  }
+
+void left(){
+  digitalWrite(relay1, LOW);
+  digitalWrite(relay2, LOW);
+  digitalWrite(relay3, HIGH);
+  digitalWrite(relay4, LOW);
+  }
