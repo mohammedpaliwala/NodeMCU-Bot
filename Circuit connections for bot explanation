@@ -1,0 +1,26 @@
+Connections from L298 Module to NodeMCU:
+- in1 to D1
+- in2 to D2
+- in3 to D3
+- in4 to D4
+- 5v to VIN
+- Ground to GND
+
+Connections from Battery to L298 Module:
+- (+) wire to 12V
+- (-) wire to ground
+
+Connections from Relay Module to NodeMCU:
+- in1 to D5
+- in2 to D6
+- Ground to GND
+- VCC to 3.3V
+
+Connections from Battery to Relay Module:
+- Any one wire to NC terminal
+- Any one wire to NO terminal
+
+Setting up the relay module:
+- Short the NC and NO terminals of 2 channels
+- In the common terminal of the 2 channels, connect the wires from the motor
+
